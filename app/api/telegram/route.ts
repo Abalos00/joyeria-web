@@ -139,6 +139,44 @@ export async function POST(request: Request) {
       imagenes: [],
     };
 
+    // If the incoming parsed JSON included images (e.g., data URLs from the builder), process them
+    const pd = productData as Partial<SubmittedProduct> | undefined;
+    if (pd && Array.isArray(pd.imagenes) && pd.imagenes.length > 0) {
+      const imgs: string[] = [];
+      for (const src of pd.imagenes) {
+        try {
+          if (typeof src === "string" && src.startsWith("data:")) {
+            // data:[<mediatype>][;base64],<data>
+            const comma = src.indexOf(",");
+            const meta = src.substring(5, comma);
+            const isBase64 = meta.includes("base64");
+            const b64 = src.substring(comma + 1);
+            if (!isBase64) {
+              // not base64 - skip
+              continue;
+            }
+            const buffer = Buffer.from(b64, "base64");
+            await ensureDir(UPLOAD_DIR);
+            const extMatch = meta.match(/image\/(\w+)/);
+            const ext = extMatch ? extMatch[1] : "jpg";
+            const filename = `${Date.now()}-upload.${ext}`;
+            const dest = path.join(UPLOAD_DIR, filename);
+            await fs.promises.writeFile(dest, buffer);
+            imgs.push(`/uploads/${filename}`);
+          } else if (typeof src === "string" && (src.startsWith("http") || src.startsWith("/"))) {
+            imgs.push(src);
+          } else {
+            // store unknown string as-is
+            imgs.push(String(src));
+          }
+        } catch (err) {
+          // ignore a single image error and continue
+          console.warn("failed processing incoming image", err);
+        }
+      }
+      product.imagenes.push(...imgs);
+    }
+
     // handle photo download if available
     if (message.photo && Array.isArray(message.photo) && message.photo.length > 0) {
       const largest = message.photo[message.photo.length - 1];

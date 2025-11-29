@@ -1,5 +1,16 @@
 [
   {
+    "nombre": "Colonia DKNY",
+    "descripcion": "Colonia mujer",
+    "precio": "20000",
+    "etiqueta": null,
+    "stock": 3,
+    "activo": true,
+    "imagenes": [],
+    "id": 1764457538292,
+    "createdAt": "2025-11-29T23:05:38.292Z"
+  },
+  {
     "nombre": "Prueba webhook",
     "descripcion": "Producto via webhook",
     "precio": "$1.000",
