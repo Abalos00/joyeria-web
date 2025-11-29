@@ -2,8 +2,9 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { getProductosActivos, type Producto } from "../../data/productos";
+import { type Producto } from "../../data/productos";
 import { useCart } from "../../components/cart/CartContext";
+import { useEffect, useState } from "react";
 
 const WHATSAPP_NUMBER = "56930273601";
 
@@ -16,7 +17,24 @@ function getWhatsAppUrl(producto: Producto) {
 
 export default function ProductosPage() {
   const { items, addToCart, updateQuantity } = useCart();
-  const productos = getProductosActivos();
+  type ProductoWithMeta = Producto & { isRecent?: boolean };
+  const [productos, setProductos] = useState<ProductoWithMeta[]>([]);
+
+  useEffect(() => {
+    let mounted = true;
+    fetch("/api/products")
+      .then((r) => r.json())
+      .then((data) => {
+        if (mounted) setProductos(data as Producto[]);
+      })
+      .catch(() => {
+        // fallback to empty
+        if (mounted) setProductos([]);
+      });
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   return (
     <motion.main
@@ -70,8 +88,14 @@ export default function ProductosPage() {
                     sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 50vw"
                   />
                   {p.etiqueta && (
-                    <span className="absolute top-2 left-2 bg-emerald-500 text-white text-[10px] font-medium px-2.5 py-1 rounded-full shadow-sm">
-                      {p.etiqueta}
+                      <span className="absolute top-2 left-2 bg-emerald-500 text-white text-[10px] font-medium px-2.5 py-1 rounded-full shadow-sm">
+                        {p.etiqueta}
+                      </span>
+                    )}
+
+                  {p.isRecent && (
+                    <span className="absolute top-2 right-2 bg-slate-100 text-slate-600 text-[10px] font-medium px-2 py-0.5 rounded-full shadow-sm">
+                      Ingreso
                     </span>
                   )}
                 </div>

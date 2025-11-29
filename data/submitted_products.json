@@ -1,0 +1,13 @@
+[
+  {
+    "nombre": "Prueba webhook",
+    "descripcion": "Producto via webhook",
+    "precio": "$1.000",
+    "etiqueta": null,
+    "stock": 2,
+    "activo": true,
+    "imagenes": [],
+    "id": 1764456174139,
+    "createdAt": "2025-11-29T22:42:54.139Z"
+  }
+]

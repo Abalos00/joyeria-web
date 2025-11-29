@@ -150,7 +150,7 @@ export default function HomePage() {
             transition={{ duration: 0.6, delay: 0.2 }}
           >
             <Image
-              src="/productos/image.png"
+              src="/productos/pulsera.png"
               alt="Joyería Zamir - joyas de plata"
               fill
               className="object-cover"
